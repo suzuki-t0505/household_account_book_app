@@ -1,0 +1,18 @@
+<.header>
+  購入品 <%= @purchase.id %>
+  <:actions>
+    <.link href={~p"/purchase/#{@purchase}/edit"}>
+      <.button>編集</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="id"><%= @purchase.id %></:item>
+  <:item title="カテゴリー"><%= @purchase.category.category_name %></:item>
+  <:item title="購入品"><%= @purchase.name %></:item>
+  <:item title="金額"><%= @purchase.money %></:item>
+  <:item title="日付"><%= @purchase.date %></:item>
+</.list>
+
+<.back navigate={~p"/purchase"}>購入品一覧に戻る</.back>

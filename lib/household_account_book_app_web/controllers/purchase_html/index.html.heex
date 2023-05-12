@@ -1,0 +1,27 @@
+<.header>
+  購入品一覧
+  <:actions>
+    <.link href={~p"/purchase/new"}>
+      <.button>購入品登録</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="purchase" rows={@purchases} row_click={&JS.navigate(~p"/purchase/#{&1}")}>
+  <:col :let={purchase} label="id"><%= purchase.id %></:col>
+  <:col :let={purchase} label="カテゴリー"><%= purchase.category.category_name %></:col>
+  <:col :let={purchase} label="購入品"><%= purchase.name %></:col>
+  <:col :let={purchase} label="金額"><%= purchase.money %></:col>
+  <:col :let={purchase} label="日付"><%= purchase.date %></:col>
+  <:action :let={purchase}>
+    <div class="sr-only">
+      <.link navigate={~p"/purchase/#{purchase}"}>詳細</.link>
+    </div>
+    <.link navigate={~p"/purchase/#{purchase}/edit"}>編集</.link>
+  </:action>
+  <:action :let={purchase}>
+    <.link href={~p"/purchase/#{purchase}"} method="delete" data-confirm="Are you sure?">
+      削除
+    </.link>
+  </:action>
+</.table>

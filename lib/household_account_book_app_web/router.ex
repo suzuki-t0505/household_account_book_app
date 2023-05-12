@@ -18,6 +18,9 @@ defmodule HouseholdAccountBookAppWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    resources "/purchase", PurchaseController
+    resources "/incomes", IncomeController
   end
 
   # Other scopes may use custom stacks.

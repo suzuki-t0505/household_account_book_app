@@ -1,0 +1,11 @@
+<.header>
+  購入品登録
+</.header>
+
+<.purchase_form
+  changeset={@changeset}
+  categories={@categories}
+  action={~p"/purchase"}
+/>
+
+<.back navigate={~p"/purchase"}>購入品一覧へ戻る</.back>
