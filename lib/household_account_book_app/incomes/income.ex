@@ -14,5 +14,7 @@ defmodule HouseholdAccountBookApp.Incomes.Income do
     income
     |> cast(attrs, [:money, :date])
     |> validate_required([:money, :date])
+    # |> unique_constraint(:date, message: "すでにこの日付は登録されています。")
+    # |> unsafe_validate_unique(:date, HouseholdAccountBookApp.Repo, message: "すでにこの日付は登録されています。")
   end
 end

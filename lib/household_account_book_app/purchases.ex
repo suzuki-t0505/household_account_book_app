@@ -41,6 +41,55 @@ defmodule HouseholdAccountBookApp.Purchases do
     |> Repo.preload(:category)
   end
 
+  # date = "2023-05"
+  def get_money_by_categories(date) do
+    {start_date, end_date} = format_start_and_end_date(date)
+
+    query =
+      from(p in Purchase,
+        join: c in assoc(p, :category),
+        where: p.date >= ^start_date and p.date <= ^end_date,
+        group_by: c.category_name,
+        select: {c.category_name, sum(p.money)}
+      )
+
+    Repo.all(query)
+    |> Enum.map(fn {category_name, money} ->
+      category = Repo.get_by(Category, category_name: category_name)
+      {category.category_name, category.color_code, money}
+    end)
+  end
+
+  def get_money_by_date(date) do
+    {start_date, end_date} = format_start_and_end_date(date)
+
+    query =
+      from(p in Purchase,
+        where: p.date >= ^start_date and p.date <= ^end_date,
+        group_by: p.date,
+        select: {p.date, sum(p.money)}
+      )
+
+    money_by_date =
+      query
+      |> Repo.all()
+      |> Enum.reduce(%{}, fn {date, money}, map ->
+        Map.merge(map, %{"#{date.year}-#{date.month}-#{date.day}" => money})
+      end)
+
+    for day <- 1..end_date.day do
+      create_date = Date.new!(end_date.year, end_date.month, day)
+      money = Map.get(money_by_date, "#{create_date.year}-#{create_date.month}-#{create_date.day}", 0)
+      {create_date, money}
+    end
+  end
+
+  defp format_start_and_end_date(%Date{year: year, month: month}) do
+    start_date = Date.new!(year, month, 1)
+    end_date = Date.end_of_month(start_date)
+    {start_date, end_date}
+  end
+
   @doc """
   Gets a single purchase.
 

@@ -9,6 +9,6 @@ defmodule HouseholdAccountBookApp.Repo.Migrations.CreateIncomes do
       timestamps()
     end
 
-    create unique_index(:incomes, [:date])
+    # create unique_index(:incomes, [:date])
   end
 end

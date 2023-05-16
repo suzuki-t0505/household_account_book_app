@@ -1,16 +1,15 @@
 <.header>
-  Income <%= @income.id %>
-  <:subtitle>This is a income record from your database.</:subtitle>
+  収入 <%= @income.id %>
   <:actions>
     <.link href={~p"/incomes/#{@income}/edit"}>
-      <.button>Edit income</.button>
+      <.button>編集</.button>
     </.link>
   </:actions>
 </.header>
 
 <.list>
-  <:item title="Money"><%= @income.money %></:item>
-  <:item title="Date"><%= @income.date %></:item>
+  <:item title="収入"><%= @income.money %></:item>
+  <:item title="日付"><%= @income.date %></:item>
 </.list>
 
-<.back navigate={~p"/incomes"}>Back to incomes</.back>
+<.back navigate={~p"/incomes"}>収入一覧に戻る</.back>

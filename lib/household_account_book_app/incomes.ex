@@ -21,6 +21,19 @@ defmodule HouseholdAccountBookApp.Incomes do
     Repo.all(Income)
   end
 
+  # date = "2023-05"
+  def sum_incomes_by_month(%Date{year: year, month: month}) do
+    start_date = Date.new!(year, month, 1)
+    end_date = Date.end_of_month(start_date)
+    query =
+      from(i in Income,
+        where: i.date >= ^start_date and i.date <= ^end_date,
+        select: sum(i.money)
+      )
+
+    if income = Repo.one(query), do: income, else: 0
+  end
+
   @doc """
   Gets a single income.
 

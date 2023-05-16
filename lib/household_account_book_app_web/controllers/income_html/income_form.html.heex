@@ -2,9 +2,9 @@
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error>
-  <.input field={f[:money]} type="number" label="Money" />
-  <.input field={f[:date]} type="date" label="Date" />
+  <.input field={f[:money]} type="number" label="収入" />
+  <.input field={f[:date]} type="date" label="日付" />
   <:actions>
-    <.button>Save Income</.button>
+    <.button>保存</.button>
   </:actions>
 </.simple_form>

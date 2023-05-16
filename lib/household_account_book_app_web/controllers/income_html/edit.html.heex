@@ -1,8 +1,7 @@
 <.header>
-  Edit Income <%= @income.id %>
-  <:subtitle>Use this form to manage income records in your database.</:subtitle>
+  収入編集 <%= @income.id %>
 </.header>
 
 <.income_form changeset={@changeset} action={~p"/incomes/#{@income}"} />
 
-<.back navigate={~p"/incomes"}>Back to incomes</.back>
+<.back navigate={~p"/incomes"}>収入一覧に戻る</.back>

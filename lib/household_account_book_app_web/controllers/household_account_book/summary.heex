@@ -1,0 +1,149 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+
+<%
+  # メモ：ここで記述している処理をコントローラで処理をしてassignsする課題を入れてもいいかも？
+  categories =
+    @money_by_categories
+    |> Enum.map(fn {category, _color_code, _money} -> category end) 
+    |> List.insert_at(-1, "残り")
+    |> inspect()
+
+  color_code = 
+    @money_by_categories
+    |> Enum.map(fn {_category, color_code, _money} -> color_code end)
+    |> List.insert_at(-1, "#d3d3d3")
+    |> inspect()
+
+  money = 
+    Enum.map(@money_by_categories, fn {_category, _color_code, money} -> money end)
+
+  blance = @sum_incomes - Enum.sum(money)
+
+  blance = if blance > 0, do: blance, else: 0
+
+  categories_money =
+    money
+    |> List.insert_at(-1, blance) 
+    |> Enum.map(fn m -> Integer.to_string(m) end)
+    |> inspect()
+
+  date = 
+    @money_by_date
+    |> Enum.map(fn {date, _money} -> "#{date.month}月#{date.day}日" end)
+    |> inspect()
+  
+  date_money = 
+    @money_by_date
+    |> Enum.map(fn {_date, money} -> Integer.to_string(money) end)
+    |> inspect()
+
+  money_by_categories = 
+    @money_by_categories
+    |> Enum.map(fn {category, _color_code, money} ->
+        %{"category" => category, "money" => money}
+      end)
+    |> List.insert_at(-1, %{"category" => "残り", "money" => blance})
+%>
+
+<!-- Elixirの配列とかはjavascriptに直接渡せないのでelementで取得させる -->
+<div id="categories" hidden><%= categories %></div>
+<div id="colorCode" hidden><%= color_code %></div>
+<div id="categoriesMoney" hidden><%= categories_money %></div>
+<div id="date" hidden><%= date %></div>
+<div id="dateMoney" hidden><%= date_money %></div>
+
+<.header>
+  家計簿 <%= "#{@date.year}年#{@date.month}月" %>
+</.header>
+
+<%
+  input_date = 
+    @date
+    |> Date.to_string()
+    |> String.split("-") 
+    |> List.delete_at(-1) 
+    |> Enum.join("-")
+%>
+
+<form method="get" class="mt-4">
+  <input type="month" name="date" value={input_date}>
+  <button type="submit" class="rounded-lg bg-blue-300 px-4 py-2 ml-2">詳細</button>
+</form>
+
+<div class="mt-4">
+  <canvas id="pieChart"></canvas>
+
+  <canvas id="barChart"></canvas>
+</div>
+
+<.table id="moneyByCategories" rows={money_by_categories}>
+  <:col :let={money_by_category} label="カテゴリー">
+    <%= money_by_category["category"] %>
+  </:col>
+
+  <:col :let={money_by_category} label="使用金額">
+    <%= money_by_category["money"] %>円
+  </:col>
+</.table>
+
+<script>
+
+  // メモ：どうしてElixirではなくjavascriptを使用しているかを簡単に説明する。
+  // メモ：ここでの処理は詳しく解説しない。
+  // 引数で受け取ったelementのテキストを文字列の要素を持った配列に変換する関数
+  function replaceAndSplitString(element) {
+    return element.innerHTML.split(',').map(value => value.replace(/(\'|\"|\[|\]| )/g, ''))
+  }
+
+  // 引数で受け取ったelementのテキストを整数の要素を持った配列に変換する関数
+  function replaceAndSplitStringToNumbers(element) {
+    return replaceAndSplitString(element).map(value => Number(value))
+  }
+
+  // 取得した文字列を配列に変換する
+  var categories = replaceAndSplitString(document.getElementById('categories'))
+  var colorCode = replaceAndSplitString(document.getElementById('colorCode'))
+  var categoriesMoney = replaceAndSplitStringToNumbers(document.getElementById('categoriesMoney'))
+  var date = replaceAndSplitString(document.getElementById('date'))
+  var dateMoney = replaceAndSplitStringToNumbers(document.getElementById('dateMoney'))
+
+  var pieCtx = document.getElementById('pieChart')
+  var barCtx = document.getElementById('barChart')
+
+  // 円グラフを描画するためのデータを作成
+  var pieChart = new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+      labels: categories,
+      datasets: [{
+        backgroundColor: colorCode,
+        data: categoriesMoney
+      }]
+    },
+    options: {
+      title: {
+        display: true,
+        text: '<%= "#{@date.year}年#{@date.month}月" %>'
+      }
+    }
+  })
+
+// 棒グラフを描画するためのデータを作成
+  var barChart = new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels: date,
+      datasets: [{
+        label: '',
+        data: dateMoney,
+        backgroundColor: '#00bfff'
+      }]
+    },
+    options: {
+      title: {
+        display: true,
+        text: '<%= "#{@date.year}年#{@date.month}月" %>'
+      }
+    }
+  })
+</script>
